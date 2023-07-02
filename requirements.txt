@@ -1,4 +1,4 @@
 Flask==2.0.2
-tensorflow
+tensorflow==2.6.0
 opencv-python-headless==4.5.4.60
-tensorflow-object-detection-api
+tf-models-official==2.6.0
