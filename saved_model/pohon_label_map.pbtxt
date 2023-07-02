@@ -1,0 +1,80 @@
+item {
+    name: "akarPatahmati",
+    id: 1,
+    display_name: "akarPatahmati"
+}
+item {
+    name: "batangakarpatah",
+    id: 2,
+    display_name: "batangakarpatah"
+}
+item {
+    name: "batangpecah",
+    id: 3,
+    display_name: "batangpecah"
+}
+item {
+    name: "brumakarbatang",
+    id: 4,
+    display_name: "brumakarbatang"
+}
+item {
+    name: "cabangpatahmati",
+    id: 5,
+    display_name: "cabangpatahmati"
+}
+item {
+    name: "daunberubahwarna",
+    id: 6,
+    display_name: "daunberubahwarna"
+}
+item {
+    name: "daunpucuktunasrusak",
+    id: 7,
+    display_name: "daunpucuktunasrusak"
+}
+item {
+    name: "gerowong",
+    id: 8,
+    display_name: "gerowong"
+}
+item {
+    name: "hilangpucukdominan",
+    id: 9,
+    display_name: "hilangpucukdominan"
+}
+item {
+    name: "kanker",
+    id: 10,
+    display_name: "kanker"
+}
+item {
+    name: "konk",
+    id: 11,
+    display_name: "konk"
+}
+item {
+    name: "liana",
+    id: 12,
+    display_name: "liana"
+}
+item {
+    name: "lukaterbuka",
+    id: 13,
+    display_name: "lukaterbuka"
+}
+item {
+    name: "percabanganbrumberlebihan",
+    id: 14,
+    display_name: "percabanganbrumberlebihan"
+}
+item {
+    name: "resinosisgumosis",
+    id: 15,
+    display_name: "resinosisgumosis"
+}
+item {
+    name: "sarangrayap",
+    id: 16,
+    display_name: "sarangrayap"
+}

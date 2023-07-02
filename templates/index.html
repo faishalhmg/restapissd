@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Object Detection</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Object Detection</h1>
+    <div>
+        <form id="image-form" method="post" enctype="multipart/form-data" action="/detect_image">
+            <input type="file" name="image" accept="image/*">
+            <input type="submit" value="Detect">
+        </form>
+    </div>
+    <div>
+        <img id="output-image" src="{{ url_for('static', filename='output.jpg') }}" style="display: none;">
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#image-form').submit(function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '/detect_image',
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#output-image').attr('src', URL.createObjectURL(response));
+                        $('#output-image').show();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
