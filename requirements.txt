@@ -3,4 +3,4 @@ tensorflow==2.6.0
 opencv-python-headless==4.5.4.60
 tf-models-official==2.6.0
 protobuf==3.20.*
-.
+setup.py
