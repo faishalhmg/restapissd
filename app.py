@@ -2,8 +2,7 @@ import tensorflow as tf
 from flask import Flask, render_template, Response, request
 import cv2
 import numpy as np
-
-app = Flask(__name__)
+import streamlit as st
 
 # Loading the saved_model
 PATH_TO_SAVED_MODEL = "saved_model"
@@ -123,5 +122,14 @@ def detect_image():
     _, buffer = cv2.imencode('.jpg', output_img)
     return Response(buffer.tobytes(), mimetype='image/jpeg')
 
+def main():
+    st.title("Object Detection")
+    st.markdown(
+        """
+        This is a web application for object detection using TensorFlow and Flask.
+        """
+    )
+
 if __name__ == '__main__':
+    main()
     app.run()
