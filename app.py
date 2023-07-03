@@ -1,8 +1,15 @@
 import tensorflow as tf
+from flask import Flask, render_template, Response, request
 import cv2
 import numpy as np
-import streamlit as st
 
+app = Flask(__name__)
+
+# Loading the saved_model
+PATH_TO_SAVED_MODEL = "saved_model"
+detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
+
+# Loading the label_map
 label_map = {
     1: "akarPatahmati",
     2: "batangakarpatah",
@@ -41,10 +48,6 @@ class_colors = [
     (255, 0, 128)   # Pink
 ]
 
-# Loading the saved_model
-PATH_TO_SAVED_MODEL = "saved_model"
-detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
-
 def detect_objects(frame):
     image_np = np.array(frame)
 
@@ -67,46 +70,58 @@ def detect_objects(frame):
             top = int(ymin * height)
             right = int(xmax * width)
             bottom = int(ymax * height)
-
+            offset = 40  # Jumlah offset yang ingin Anda gunakan
             class_name = label_map[int(class_id)]
+
+            # Get class color based on class_id
             class_color = class_colors[int(class_id) % len(class_colors)]
 
-            # Add bounding box to image
-            cv2.rectangle(image_np_with_detections, (left, top), (right, bottom), class_color, 2)
+            # Draw bounding box
+            cv2.rectangle(image_np_with_detections, (left, top + offset), (right, bottom), class_color, 2)
 
             # Add background box for label
-            cv2.rectangle(image_np_with_detections, (left, top - 20), (right, top), class_color, -1)
+            cv2.rectangle(image_np_with_detections, (left, top + offset - 20), (right, top + offset), class_color, -1)
 
             # Add class label text
-            cv2.putText(image_np_with_detections, f"{class_name} ({round(score * 100, 2)}%)", (left, top - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+            cv2.putText(image_np_with_detections, f"{class_name} ({round(score * 100, 2)}%)", (left, top + offset - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
 
     return image_np_with_detections
 
-def main():
-    st.title("Object Detection")
+def generate_frames():
+    cap = cv2.VideoCapture(0)
 
-    option = st.sidebar.selectbox("Choose an option", ["Image", "Camera"])
+    while True:
+        ret, frame = cap.read()
 
-    if option == "Image":
-        image_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+        if not ret:
+            break
 
-        if image_file is not None:
-            img = cv2.imdecode(np.frombuffer(image_file.read(), np.uint8), cv2.IMREAD_COLOR)
-            output_img = detect_objects(img)
-            st.image(output_img, channels="BGR")
+        output_frame = detect_objects(frame)
 
-    elif option == "Camera":
-        video_capture = cv2.VideoCapture(0)
+        ret, buffer = cv2.imencode('.jpg', output_frame)
 
-        while True:
-            ret, frame = video_capture.read()
-            if not ret:
-                break
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-            output_frame = detect_objects(frame)
-            st.image(output_frame, channels="BGR")
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-        video_capture.release()
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    
+@app.route('/detect_image', methods=['POST'])
+def detect_image():
+    file = request.files['image']
+    img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_COLOR)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    output_img = detect_objects(img)
+    output_img = cv2.cvtColor(output_img, cv2.COLOR_RGB2BGR)
+    _, buffer = cv2.imencode('.jpg', output_img)
+    return Response(buffer.tobytes(), mimetype='image/jpeg')
 
 if __name__ == '__main__':
-    main()
+    app.run()
