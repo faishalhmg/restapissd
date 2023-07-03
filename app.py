@@ -67,20 +67,18 @@ def detect_objects(frame):
             top = int(ymin * height)
             right = int(xmax * width)
             bottom = int(ymax * height)
-            offset = 10  # Jumlah offset yang ingin Anda gunakan
-            class_name = label_map[int(class_id)]
 
-            # Get class color based on class_id
+            class_name = label_map[int(class_id)]
             class_color = class_colors[int(class_id) % len(class_colors)]
 
-            # Draw bounding box
-            cv2.rectangle(image_np_with_detections, (left, top + offset), (right, bottom), class_color, 2)
+            # Add bounding box to image
+            cv2.rectangle(image_np_with_detections, (left, top), (right, bottom), class_color, 2)
 
             # Add background box for label
-            cv2.rectangle(image_np_with_detections, (left, top + offset - 20), (right, top + offset), class_color, -1)
+            cv2.rectangle(image_np_with_detections, (left, top - 20), (right, top), class_color, -1)
 
             # Add class label text
-            cv2.putText(image_np_with_detections, f"{class_name} ({round(score * 100, 2)}%)", (left, top + offset - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+            cv2.putText(image_np_with_detections, f"{class_name} ({round(score * 100, 2)}%)", (left, top - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
     return image_np_with_detections
 
@@ -108,7 +106,7 @@ def main():
             output_frame = detect_objects(frame)
             st.image(output_frame, channels="BGR")
 
-    video_capture.release()
+        video_capture.release()
 
 if __name__ == '__main__':
     main()
