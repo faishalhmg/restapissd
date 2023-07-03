@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 import streamlit as st
 
+app = Flask(__name__)
+
 # Loading the saved_model
 PATH_TO_SAVED_MODEL = "saved_model"
 detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
@@ -111,25 +113,16 @@ def index():
 def video_feed():
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-    
+
 @app.route('/detect_image', methods=['POST'])
 def detect_image():
     file = request.files['image']
-    img = cv2.imdecode(np.fromstring(file.read(), np.uint8), cv2.IMREAD_COLOR)
+    img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     output_img = detect_objects(img)
     output_img = cv2.cvtColor(output_img, cv2.COLOR_RGB2BGR)
     _, buffer = cv2.imencode('.jpg', output_img)
     return Response(buffer.tobytes(), mimetype='image/jpeg')
 
-def main():
-    st.title("Object Detection")
-    st.markdown(
-        """
-        This is a web application for object detection using TensorFlow and Flask.
-        """
-    )
-
 if __name__ == '__main__':
-    main()
     app.run()
